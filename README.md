@@ -78,9 +78,9 @@ Sintetizado con WebAudio, sin archivos. Dos familias que no se confunden:
 | Guardar el conteo | DO-SOL-MI descendente, el único que cierra |
 | Cualquier otro botón | Tic fino de 1396 Hz, corto y bajo |
 
-El tic sale de un listener delegado sobre todo ; los que tienen sonido
-propio llevan  para no sonar dos veces. Todo respeta el
-interruptor de Ajustes.
+El tic sale de un listener delegado sobre todos los `button`; los que tienen
+sonido propio llevan el atributo `data-son="propio"` para no sonar dos veces.
+Todo respeta el interruptor de Ajustes.
 
 ## Publicación
 
