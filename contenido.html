@@ -63,16 +63,16 @@ body[data-pantalla="historial"] #historial{display:flex}
 /* ---------- cabecera: esperado | contado | falta ---------- */
 .cabecera{display:flex; flex-direction:column; gap:10px; background:var(--panel);
   border:1px solid var(--borde); border-radius:18px; padding:12px 14px}
-.cabeceraFila{display:flex; align-items:center; gap:12px}
+.cabeceraFila{display:flex; align-items:center; gap:10px}
 .esperado{display:flex; flex-direction:column; gap:4px; flex:none}
 .esperado label{font-size:12px; color:var(--suave); font-weight:600}
 .stepper{display:flex; align-items:center; gap:6px}
-.stepper button{width:42px; height:46px; flex:none; border-radius:12px; border:1px solid var(--borde);
+.stepper button{width:38px; height:44px; flex:none; border-radius:12px; border:1px solid var(--borde);
   background:var(--fondo); font-size:22px; font-weight:700; line-height:1; display:grid; place-items:center}
 .stepper button:disabled{opacity:.35}
 .stepper button:active:not(:disabled){transform:scale(.95)}
-#esperado{width:78px; background:var(--fondo); border:1px solid var(--borde); border-radius:12px;
-  padding:10px 6px; font-size:22px; font-weight:700; letter-spacing:-.02em; text-align:center;
+#esperado{width:66px; background:var(--fondo); border:1px solid var(--borde); border-radius:12px;
+  padding:10px 4px; font-size:20px; font-weight:700; letter-spacing:-.02em; text-align:center;
   outline:none; -moz-appearance:textfield}
 .rapidos{display:flex; gap:6px}
 .rapidos button{flex:1; min-height:34px; border-radius:10px; border:1px solid var(--borde);
@@ -83,7 +83,11 @@ body[data-pantalla="historial"] #historial{display:flex}
 #esperado:focus{border-color:var(--acento); box-shadow:0 0 0 3px color-mix(in srgb, var(--acento) 22%, transparent)}
 
 .marcador{flex:1; min-width:0; text-align:right}
-#contado{font-size:clamp(46px, 15vw, 76px); font-weight:700; line-height:1; letter-spacing:-.03em}
+#contado{font-size:clamp(44px, 15vw, 72px); font-weight:700; line-height:1; letter-spacing:-.03em;
+  white-space:nowrap}
+#contado.d3{font-size:clamp(36px, 12vw, 60px)}
+#contado.d4{font-size:clamp(29px, 9.5vw, 48px)}
+#contado.d5{font-size:clamp(23px, 7.5vw, 38px)}
 #falta{font-size:14px; color:var(--suave); font-weight:600; margin-top:4px}
 body.completo #contado, body.completo #falta{color:var(--acento)}
 body.exceso   #contado, body.exceso   #falta{color:var(--exceso)}
@@ -129,9 +133,17 @@ body.exceso #contador{background:var(--exceso) !important}
 .fila button:disabled{opacity:.35}
 .fila button:active:not(:disabled){transform:scale(.98)}
 #terminar{background:var(--acento); color:var(--sobre-acento); border-color:var(--acento)}
-/* Resetear va en su propio color, ni el verde de avanzar ni el rojo de pasarse */
-#resetear{color:var(--reset); border-color:color-mix(in srgb, var(--reset) 50%, var(--borde));
-  background:color-mix(in srgb, var(--reset) 9%, var(--panel))}
+/* Resetear vive al costado del número contado, no en la fila de abajo: es lo
+   que se toca entre un conteo y el siguiente, y ahí lo tiene el pulgar.
+   Color propio, ni el verde de avanzar ni el rojo de pasarse.              */
+#resetear{flex:none; width:46px; min-height:56px; border-radius:14px;
+  border:1px solid color-mix(in srgb, var(--reset) 50%, var(--borde));
+  background:color-mix(in srgb, var(--reset) 10%, var(--panel));
+  color:var(--reset); display:grid; place-items:center; align-content:center; gap:2px; padding:6px 2px}
+#resetear .glifo{font-size:20px; line-height:1}
+#resetear .rot{font-size:9.5px; font-weight:700; letter-spacing:.02em}
+#resetear:disabled{opacity:.3}
+#resetear:active:not(:disabled){transform:scale(.95)}
 
 /* ---------- hojas ---------- */
 .hoja{position:fixed; inset:0; background:rgba(0,0,0,.45); display:none;
@@ -198,6 +210,9 @@ body.exceso #contador{background:var(--exceso) !important}
         <div class="num" id="contado">0</div>
         <div class="num" id="falta">escribe el total</div>
       </div>
+      <button id="resetear" type="button" data-son="propio" aria-label="Resetear el contador" title="Resetear el contador">
+        <span class="glifo">&#8635;</span><span class="rot">Reset</span>
+      </button>
     </div>
     <div class="rapidos" id="rapidos"></div>
   </div>
@@ -216,7 +231,6 @@ body.exceso #contador{background:var(--exceso) !important}
   <div class="fila">
     <button id="deshacer" type="button" data-son="propio">Deshacer</button>
     <button id="restar" type="button" class="num" data-son="propio">&minus;1</button>
-    <button id="resetear" type="button" data-son="propio">Resetear</button>
     <button id="terminar" type="button">Terminar</button>
   </div>
 </section>
@@ -488,6 +502,8 @@ function pintar(){
   $("masPaso").textContent = "+" + est.paso;
   $("restar").innerHTML = "&minus;" + est.paso;
   $("contado").textContent = est.contado;
+  var cifras = String(est.contado).length;
+  $("contado").className = "num" + (cifras >= 5 ? " d5" : cifras === 4 ? " d4" : cifras === 3 ? " d3" : "");
   $("deshacer").disabled = !est.pila.length;
   $("restar").disabled = est.contado <= 0;
   $("resetear").disabled = est.contado <= 0;

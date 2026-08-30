@@ -51,9 +51,12 @@ el nombre, el esperado, el conteo en curso y el historial (máximo 200).
 - **El campo del nombre vive dentro de la barra de arriba**, no en una fila
   propia: con las nueve fichas de paso y los cinco atajos de esperado, una fila
   más dejaba el botón en 39% de la pantalla.
-- **Resetear tiene color propio** (ámbar `--reset`), ni el verde de avanzar ni
-  el rojo de pasarse: es el único botón que borra trabajo hecho y conviene que
-  no se confunda con Terminar, que está justo al lado.
+- **Resetear va al costado del número contado**, no en la fila de abajo, y en
+  ámbar propio (`--reset`): ni el verde de avanzar ni el rojo de pasarse. Es lo
+  que se toca entre un conteo y el siguiente.
+- **La cifra contada encoge con los dígitos** (clases `d3`, `d4`, `d5`): en el
+  hueco que queda entre el esperado y Resetear, un 10301 grande se cortaba.
+  Medido de 1 a 5 dígitos sin corte.
 - **Dos escalas distintas y a propósito:** los atajos de `Esperado` son números
   pelados (10, 12, 20, 50, 100) y las fichas de paso llevan signo (+1, +2, +5,
   +10, +12, +20, +50, +100, otro). Es lo único que las distingue de un vistazo.
