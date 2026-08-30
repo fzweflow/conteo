@@ -108,14 +108,14 @@ if (fuente.includes("manifest.webmanifest")) probs.push("la fuente no debe enlaz
    fijo, deja de ocupar media pantalla y nadie lo nota hasta usarlo */
 if (!web.includes(".zona{flex:1")) probs.push("la zona del botón dejó de estirarse (flex:1)");
 if (!/#contador\{\s*flex:1/.test(web)) probs.push("el botón dejó de llenar su zona (flex:1)");
-["contado", "esperado", "falta", "nombre", "rapidos", "masEsperado", "menosEsperado", "contador", "deshacer", "restar", "aCero", "terminar", "pasosContar"]
+["contado", "esperado", "falta", "nombre", "rapidos", "masEsperado", "menosEsperado", "contador", "deshacer", "restar", "resetear", "terminar", "pasosContar"]
   .forEach(id => { if (!web.includes('id="' + id + '"')) probs.push("falta el elemento #" + id); });
 
 /* los colores del CSS y los de paletas.json tienen que seguir siendo los mismos */
 const paletas = JSON.parse(fs.readFileSync(path.join(dir, "paletas.json"), "utf8"));
 const claro = paletas.paletas.conteo.claro;
 [["--fondo", claro.fondo], ["--acento", claro.acento], ["--tinta", claro.tinta], ["--exceso", claro.exceso],
- ["--rampaInicio", claro.rampaInicio], ["--rampaMedio", claro.rampaMedio]]
+ ["--rampaInicio", claro.rampaInicio], ["--rampaMedio", claro.rampaMedio], ["--reset", claro.reset]]
   .forEach(([tok, val]) => {
     if (!web.includes(tok + ":" + val)) probs.push("el CSS y paletas.json no coinciden en " + tok + " (" + val + ")");
   });

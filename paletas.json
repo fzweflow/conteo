@@ -65,6 +65,18 @@
       "sobreAcento",
       "rampaMedio",
       4.5
+    ],
+    [
+      "resetear sobre panel",
+      "reset",
+      "panel",
+      4.5
+    ],
+    [
+      "resetear sobre fondo",
+      "reset",
+      "fondo",
+      4.5
     ]
   ],
   "paletas": {
@@ -79,7 +91,8 @@
         "sobreAcento": "#FFFFFF",
         "exceso": "#9C3714",
         "rampaInicio": "#2C5F7A",
-        "rampaMedio": "#0E6B70"
+        "rampaMedio": "#0E6B70",
+        "reset": "#8A5300"
       },
       "oscuro": {
         "fondo": "#0E1311",
@@ -91,7 +104,8 @@
         "sobreAcento": "#04140F",
         "exceso": "#FF9166",
         "rampaInicio": "#7FB0C9",
-        "rampaMedio": "#4FC2BE"
+        "rampaMedio": "#4FC2BE",
+        "reset": "#E9B44C"
       }
     }
   }

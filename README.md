@@ -51,13 +51,16 @@ el nombre, el esperado, el conteo en curso y el historial (máximo 200).
 - **El campo del nombre vive dentro de la barra de arriba**, no en una fila
   propia: con las nueve fichas de paso y los cinco atajos de esperado, una fila
   más dejaba el botón en 39% de la pantalla.
+- **Resetear tiene color propio** (ámbar `--reset`), ni el verde de avanzar ni
+  el rojo de pasarse: es el único botón que borra trabajo hecho y conviene que
+  no se confunda con Terminar, que está justo al lado.
 - **Dos escalas distintas y a propósito:** los atajos de `Esperado` son números
   pelados (10, 12, 20, 50, 100) y las fichas de paso llevan signo (+1, +2, +5,
   +10, +12, +20, +50, +100, otro). Es lo único que las distingue de un vistazo.
 - **Hubo un modo "conteo a ciegas"** (escondía el total mientras contabas, porque
   ver la cifra esperada empuja a cuadrarla) y se sacó al simplificar: choca con
   una pantalla cuyo primer elemento es justamente el total esperado.
-- **"A cero" no pregunta nada.** Se apila como un movimiento más, así Deshacer
+- **"Resetear" no pregunta nada.** Se apila como un movimiento más, así Deshacer
   lo devuelve entero si fue sin querer; un cuadro de confirmación en un botón
   que se usa entre conteo y conteo solo estorba.
 - **El conteo en curso se guarda en cada pulsación.** Si se cierra la app, al
@@ -74,7 +77,7 @@ Sintetizado con WebAudio, sin archivos. Dos familias que no se confunden:
 | Contar de más | Cuadrada grave, 196 Hz |
 | Restar | 392 Hz |
 | Deshacer | Dos notas hacia abajo (659→494) |
-| A cero | Tres notas hacia abajo (659→494→330) |
+| Resetear | Tres notas hacia abajo (659→494→330) |
 | Guardar el conteo | DO-SOL-MI descendente, el único que cierra |
 | Cualquier otro botón | Tic fino de 1396 Hz, corto y bajo |
 

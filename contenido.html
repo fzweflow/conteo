@@ -13,14 +13,14 @@
 :root{
   --fondo:#F3F5F3; --panel:#FFFFFF; --tinta:#131A18; --suave:#55605D;
   --borde:#D3D9D6; --acento:#0B6E58; --sobre-acento:#FFFFFF; --exceso:#9C3714;
-  --rampaInicio:#2C5F7A; --rampaMedio:#0E6B70;
+  --rampaInicio:#2C5F7A; --rampaMedio:#0E6B70; --reset:#8A5300;
   --sombra:0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.06);
 }
 @media (prefers-color-scheme: dark){
   :root{
     --fondo:#0E1311; --panel:#171E1B; --tinta:#E9EEEB; --suave:#9FABA7;
     --borde:#2B3531; --acento:#3DBB9B; --sobre-acento:#04140F; --exceso:#FF9166;
-    --rampaInicio:#7FB0C9; --rampaMedio:#4FC2BE;
+    --rampaInicio:#7FB0C9; --rampaMedio:#4FC2BE; --reset:#E9B44C;
     --sombra:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
   }
 }
@@ -129,6 +129,9 @@ body.exceso #contador{background:var(--exceso) !important}
 .fila button:disabled{opacity:.35}
 .fila button:active:not(:disabled){transform:scale(.98)}
 #terminar{background:var(--acento); color:var(--sobre-acento); border-color:var(--acento)}
+/* Resetear va en su propio color, ni el verde de avanzar ni el rojo de pasarse */
+#resetear{color:var(--reset); border-color:color-mix(in srgb, var(--reset) 50%, var(--borde));
+  background:color-mix(in srgb, var(--reset) 9%, var(--panel))}
 
 /* ---------- hojas ---------- */
 .hoja{position:fixed; inset:0; background:rgba(0,0,0,.45); display:none;
@@ -213,7 +216,7 @@ body.exceso #contador{background:var(--exceso) !important}
   <div class="fila">
     <button id="deshacer" type="button" data-son="propio">Deshacer</button>
     <button id="restar" type="button" class="num" data-son="propio">&minus;1</button>
-    <button id="aCero" type="button" data-son="propio">A cero</button>
+    <button id="resetear" type="button" data-son="propio">Resetear</button>
     <button id="terminar" type="button">Terminar</button>
   </div>
 </section>
@@ -487,7 +490,7 @@ function pintar(){
   $("contado").textContent = est.contado;
   $("deshacer").disabled = !est.pila.length;
   $("restar").disabled = est.contado <= 0;
-  $("aCero").disabled = est.contado <= 0;
+  $("resetear").disabled = est.contado <= 0;
   $("cada").textContent = est.contado === 0 ? "toca para contar" : "por pulsación";
   if(document.activeElement !== $("esperado")){
     $("esperado").value = est.esperado ? est.esperado : "";
@@ -549,7 +552,7 @@ $("deshacer").addEventListener("click", deshacer);
 
 /* Volver a cero sin preguntar: se apila como un movimiento más, así Deshacer
    lo devuelve entero si fue sin querer. Un cuadro de confirmación aquí sobra. */
-$("aCero").addEventListener("click", function(){
+$("resetear").addEventListener("click", function(){
   if(!est.contado) return;
   aplicar(-est.contado, "cero");
 });
