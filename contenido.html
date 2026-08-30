@@ -51,6 +51,8 @@ body[data-pantalla="historial"] #historial{display:flex}
 .ligero{flex:none; background:none; border:none; color:var(--suave); font-size:13px; font-weight:650;
   padding:10px 4px; border-radius:10px}
 .ligero:active{color:var(--tinta)}
+.redondo{width:34px; height:34px; padding:0; border:1px solid var(--borde); border-radius:50%;
+  font-size:15px; font-weight:700; background:var(--panel)}
 
 /* ---------- qué se está contando ----------
    Va dentro de la barra de arriba y no en una fila propia: cada fila que se
@@ -182,6 +184,9 @@ body.exceso #contador{background:var(--exceso) !important}
 .dif.mal{color:var(--exceso); border-color:color-mix(in srgb, var(--exceso) 45%, var(--borde))}
 .icono{border:1px solid var(--borde); background:var(--panel); border-radius:12px;
   min-width:44px; height:44px; display:grid; place-items:center; font-size:15px; font-weight:600}
+.ayuda{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:9px;
+  font-size:14px; line-height:1.45; color:var(--suave)}
+.ayuda b{color:var(--tinta)}
 .vacio{color:var(--suave); font-size:14px; text-align:center; padding:40px 20px; line-height:1.5}
 </style>
 </head>
@@ -191,6 +196,7 @@ body.exceso #contador{background:var(--exceso) !important}
 <section class="pantalla" id="contar">
   <div class="barra">
     <input id="nombre" type="text" placeholder="¿Qué estás contando?" autocomplete="off" enterkeyhint="done">
+    <button class="ligero redondo" id="verAyuda" type="button" aria-label="Cómo funciona" title="Cómo funciona">?</button>
     <button class="ligero" id="verHistorial" type="button">Historial</button>
     <button class="ligero" id="verAjustes" type="button">Ajustes</button>
   </div>
@@ -257,6 +263,23 @@ body.exceso #contador{background:var(--exceso) !important}
     <label class="opcion"><span><span class="txt">Pantalla siempre encendida</span><p>Mientras estás contando.</p></span>
       <input type="checkbox" id="ajPantalla"></label>
     <button class="principal" id="cerrarAjustes" type="button">Listo</button>
+  </div>
+</div>
+
+<!-- ============ hoja: cómo funciona ============ -->
+<div class="hoja" id="hojaAyuda">
+  <div>
+    <h2>Cómo funciona</h2>
+    <ol class="ayuda">
+      <li><b>Escribe el total esperado</b> arriba a la izquierda, con los botones − y + o con los atajos 10, 12, 20, 50, 100. Si lo dejas en cero cuenta igual, sin meta.</li>
+      <li><b>Toca el botón grande.</b> Suma lo que diga la ficha marcada abajo: +1, +12, +100 o el número que escribas en "otro".</li>
+      <li><b>El botón cambia de color y el tono sube</b> a medida que te acercas. Al llegar al total suena un acorde y se pone verde.</li>
+      <li><b>Si te pasas</b> se pone rojo y avisa con un sonido grave, pero no te frena: contar de más también es un dato.</li>
+      <li><b>Deshacer</b> quita la última pulsación, <b>−</b> resta de a un paso y <b>Resetear</b> vuelve a cero. Los tres se pueden deshacer.</li>
+      <li><b>Terminar</b> guarda el conteo con su diferencia en el Historial, que se puede copiar como tabla para pegar en Excel. El ↻ de cada línea repite ese mismo conteo.</li>
+    </ol>
+    <p class="pista">Se guarda solo en cada pulsación: si cierras la app, vuelves donde ibas. Funciona sin señal. En Ajustes se apagan la vibración y el sonido.</p>
+    <button class="principal" id="cerrarAyuda" type="button">Listo</button>
   </div>
 </div>
 
@@ -667,6 +690,8 @@ function pintarAjustes(){
     if(par[1] === "pantalla"){ if(est.ajustes.pantalla) pedirPantalla(); else soltarPantalla(); }
   });
 });
+$("verAyuda").addEventListener("click", function(){ abrir("hojaAyuda"); });
+$("cerrarAyuda").addEventListener("click", function(){ cerrar("hojaAyuda"); });
 $("verAjustes").addEventListener("click", function(){ pintarAjustes(); abrir("hojaAjustes"); });
 $("cerrarAjustes").addEventListener("click", function(){ cerrar("hojaAjustes"); });
 

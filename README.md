@@ -68,6 +68,8 @@ el nombre, el esperado, el conteo en curso y el historial (máximo 200).
 - **"Resetear" no pregunta nada.** Se apila como un movimiento más, así Deshacer
   lo devuelve entero si fue sin querer; un cuadro de confirmación en un botón
   que se usa entre conteo y conteo solo estorba.
+- **La ayuda es un `?` redondo de 34 px en la barra de arriba**, no una fila ni
+  una pantalla: seis pasos numerados en una hoja que cabe entera sin scroll.
 - **El conteo en curso se guarda en cada pulsación.** Si se cierra la app, al
   volver sigue donde iba.
 
