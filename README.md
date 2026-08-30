@@ -28,15 +28,15 @@ servidor.js      servidor local con los tipos MIME correctos
 dist/            generado — no se edita, no va al repositorio
 ```
 
-Todo el estado se guarda en `localStorage` bajo la clave `conteo.v1`: ajustes,
-el conteo en curso y el historial (máximo 200).
+Todo el estado se guarda en `localStorage` bajo la clave `conteo.v2`: ajustes,
+el nombre, el esperado, el conteo en curso y el historial (máximo 200).
 
 ## Decisiones que no conviene romper
 
 - **El botón ocupa cerca de la mitad de la pantalla.** No es capricho: se usa de
   pie, con una mano ocupada. Es un rectángulo redondeado y no un círculo porque
   un círculo lo limita el ancho del teléfono y se queda en un cuarto de la
-  pantalla. Medido: 56% del área en 375×812, 38% en 360×640. El botón se estira
+  pantalla. Medido: 46% del área (49% del alto) en 375×812, 33% en 360×640. Se estira
   con `flex:1` dentro de `.zona`; ponerle un alto fijo lo rompe, y por eso el
   build lo comprueba. Todo lo que se agregue a la pantalla se lo come a él.
 - **Una sola pantalla, sin paso previo.** El total esperado es un campo que se
@@ -48,8 +48,12 @@ el conteo en curso y el historial (máximo 200).
   bien aunque hayas cambiado cuánto suma cada pulsación a mitad de camino.
 - **Pasarse del total no se bloquea.** Contar de más es un dato del inventario,
   no un error de la app: se marca en rojo y se guarda la diferencia.
-- **El nombre de lo que se cuenta se pide al terminar, no antes.** Antes ocupaba
-  un campo en la portada y retrasaba el primer toque.
+- **El campo del nombre vive dentro de la barra de arriba**, no en una fila
+  propia: con las nueve fichas de paso y los cinco atajos de esperado, una fila
+  más dejaba el botón en 39% de la pantalla.
+- **Dos escalas distintas y a propósito:** los atajos de `Esperado` son números
+  pelados (10, 12, 20, 50, 100) y las fichas de paso llevan signo (+1, +2, +5,
+  +10, +12, +20, +50, +100, otro). Es lo único que las distingue de un vistazo.
 - **Hubo un modo "conteo a ciegas"** (escondía el total mientras contabas, porque
   ver la cifra esperada empuja a cuadrarla) y se sacó al simplificar: choca con
   una pantalla cuyo primer elemento es justamente el total esperado.

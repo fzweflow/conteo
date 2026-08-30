@@ -38,26 +38,45 @@ button{cursor:pointer}
 
 .pantalla{display:none; min-height:100vh; min-height:100dvh; flex-direction:column;
   padding:max(10px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
-  gap:12px; max-width:560px; margin:0 auto}
+  gap:10px; max-width:560px; margin:0 auto}
 body[data-pantalla="contar"]    #contar,
 body[data-pantalla="historial"] #historial{display:flex}
 
 /* ---------- barra fina de arriba ---------- */
-.barra{display:flex; align-items:center; gap:8px; min-height:34px}
+.barra{display:flex; align-items:center; gap:6px; min-height:34px}
 .barra h1{font-size:18px; margin:0; font-weight:650}
 .barra .crece{flex:1}
-.ligero{background:none; border:none; color:var(--suave); font-size:14px; font-weight:600;
-  padding:8px 6px; border-radius:10px}
+.ligero{flex:none; background:none; border:none; color:var(--suave); font-size:13px; font-weight:650;
+  padding:10px 4px; border-radius:10px}
 .ligero:active{color:var(--tinta)}
 
+/* ---------- qué se está contando ----------
+   Va dentro de la barra de arriba y no en una fila propia: cada fila que se
+   agrega se la quita al botón de contar.                                   */
+#nombre{flex:1; min-width:0; background:var(--panel); border:1px solid var(--borde); border-radius:12px;
+  padding:10px 12px; font-size:15px; font-weight:600; outline:none}
+#nombre::placeholder{color:var(--suave); font-weight:400}
+#nombre:focus{border-color:var(--acento)}
+
 /* ---------- cabecera: esperado | contado | falta ---------- */
-.cabecera{display:flex; align-items:center; gap:14px; background:var(--panel);
+.cabecera{display:flex; flex-direction:column; gap:10px; background:var(--panel);
   border:1px solid var(--borde); border-radius:18px; padding:12px 14px}
+.cabeceraFila{display:flex; align-items:center; gap:12px}
 .esperado{display:flex; flex-direction:column; gap:4px; flex:none}
 .esperado label{font-size:12px; color:var(--suave); font-weight:600}
-#esperado{width:104px; background:var(--fondo); border:1px solid var(--borde); border-radius:12px;
-  padding:10px 12px; font-size:24px; font-weight:700; letter-spacing:-.02em; text-align:center;
+.stepper{display:flex; align-items:center; gap:6px}
+.stepper button{width:42px; height:46px; flex:none; border-radius:12px; border:1px solid var(--borde);
+  background:var(--fondo); font-size:22px; font-weight:700; line-height:1; display:grid; place-items:center}
+.stepper button:disabled{opacity:.35}
+.stepper button:active:not(:disabled){transform:scale(.95)}
+#esperado{width:78px; background:var(--fondo); border:1px solid var(--borde); border-radius:12px;
+  padding:10px 6px; font-size:22px; font-weight:700; letter-spacing:-.02em; text-align:center;
   outline:none; -moz-appearance:textfield}
+.rapidos{display:flex; gap:6px}
+.rapidos button{flex:1; min-height:34px; border-radius:10px; border:1px solid var(--borde);
+  background:var(--fondo); font-size:14px; font-weight:650; color:var(--suave); padding:0 4px}
+.rapidos button[aria-pressed="true"]{background:var(--acento); color:var(--sobre-acento); border-color:var(--acento)}
+.rapidos button:active{transform:scale(.96)}
 #esperado::-webkit-outer-spin-button,#esperado::-webkit-inner-spin-button{-webkit-appearance:none; margin:0}
 #esperado:focus{border-color:var(--acento); box-shadow:0 0 0 3px color-mix(in srgb, var(--acento) 22%, transparent)}
 
@@ -89,13 +108,17 @@ body.exceso .barraProg span{background:var(--exceso)}
 body.completo #contador{background:color-mix(in srgb, var(--acento) 84%, var(--tinta))}
 body.exceso   #contador{background:var(--exceso)}
 
-/* ---------- fichas de paso ---------- */
-.pasos{display:flex; flex-wrap:wrap; gap:8px}
-.ficha{border:1px solid var(--borde); background:var(--panel); border-radius:999px;
-  padding:9px 15px; font-size:15px; font-weight:600; min-height:44px}
+/* ---------- fichas de paso ----------
+   Son nueve: van compactas a propósito, porque cada píxel que se llevan aquí
+   se lo quitan al botón de contar.                                         */
+.pasos{display:flex; flex-wrap:wrap; gap:6px}
+.ficha{flex:1 0 auto; border:1px solid var(--borde); background:var(--panel); border-radius:999px;
+  padding:8px 10px; font-size:15px; font-weight:600; min-height:42px; min-width:52px}
 .ficha[aria-pressed="true"]{background:var(--acento); color:var(--sobre-acento); border-color:var(--acento)}
-#otroPaso{width:82px; padding:9px 10px; border-radius:999px; text-align:center; font-weight:600;
-  background:var(--panel); border:1px solid var(--borde); min-height:44px; outline:none}
+#otroPaso{flex:1 0 auto; min-width:62px; width:62px; padding:8px 6px; border-radius:999px;
+  text-align:center; font-weight:600; background:var(--panel); border:1px solid var(--borde);
+  min-height:42px; outline:none; -moz-appearance:textfield}
+#otroPaso::-webkit-outer-spin-button,#otroPaso::-webkit-inner-spin-button{-webkit-appearance:none; margin:0}
 
 /* ---------- fila inferior ---------- */
 .fila{display:flex; gap:8px}
@@ -119,9 +142,6 @@ body.exceso   #contador{background:var(--exceso)}
 .opcion p{margin:2px 0 0; font-size:13px; color:var(--suave); line-height:1.4}
 .opcion input{width:24px; height:24px; accent-color:var(--acento); flex:none}
 .opcion .txt{font-size:15px; font-weight:600}
-#nombre{background:var(--fondo); border:1px solid var(--borde); border-radius:14px;
-  padding:13px 15px; font-size:16px; width:100%; outline:none}
-#nombre:focus{border-color:var(--acento)}
 .principal{border:none; border-radius:16px; background:var(--acento); color:var(--sobre-acento);
   padding:16px; font-size:17px; font-weight:650; width:100%}
 .principal:active{transform:scale(.99)}
@@ -153,21 +173,28 @@ body.exceso   #contador{background:var(--exceso)}
 <!-- ============ pantalla única: contar ============ -->
 <section class="pantalla" id="contar">
   <div class="barra">
+    <input id="nombre" type="text" placeholder="¿Qué estás contando?" autocomplete="off" enterkeyhint="done">
     <button class="ligero" id="verHistorial" type="button">Historial</button>
-    <span class="crece"></span>
     <button class="ligero" id="verAjustes" type="button">Ajustes</button>
   </div>
 
   <div class="cabecera">
-    <div class="esperado">
-      <label for="esperado">Esperado</label>
-      <input id="esperado" type="number" inputmode="numeric" min="0" max="999999" placeholder="0"
-             enterkeyhint="done" autocomplete="off">
+    <div class="cabeceraFila">
+      <div class="esperado">
+        <label for="esperado">Esperado</label>
+        <div class="stepper">
+          <button id="menosEsperado" type="button" aria-label="Un esperado menos">&minus;</button>
+          <input id="esperado" type="number" inputmode="numeric" min="0" max="999999" placeholder="0"
+                 enterkeyhint="done" autocomplete="off">
+          <button id="masEsperado" type="button" aria-label="Un esperado más">+</button>
+        </div>
+      </div>
+      <div class="marcador">
+        <div class="num" id="contado">0</div>
+        <div class="num" id="falta">escribe el total</div>
+      </div>
     </div>
-    <div class="marcador">
-      <div class="num" id="contado">0</div>
-      <div class="num" id="falta">escribe el total</div>
-    </div>
+    <div class="rapidos" id="rapidos"></div>
   </div>
 
   <div class="barraProg"><span id="barra"></span></div>
@@ -224,7 +251,6 @@ body.exceso   #contador{background:var(--exceso)}
       <div><strong class="num" id="rDif">0</strong><small>diferencia</small></div>
     </div>
     <p class="pista" id="textoResumen"></p>
-    <input id="nombre" type="text" placeholder="Qué contaste (opcional)" autocomplete="off" enterkeyhint="done">
     <button class="principal" id="guardarConteo" type="button">Guardar y empezar otro</button>
     <button class="secundario" id="seguirContando" type="button">Seguir contando</button>
   </div>
@@ -235,13 +261,15 @@ body.exceso   #contador{background:var(--exceso)}
 "use strict";
 
 var CLAVE = "conteo.v2";
-var PASOS_BASE = [1, 6, 12, 24];
+var PASOS_BASE = [1, 2, 5, 10, 12, 20, 50, 100];
+var ESPERADOS_RAPIDOS = [10, 12, 20, 50, 100];
 
 /* ---------- estado ---------- */
 var est = {
   ajustes:{ vib:true, son:true, pantalla:true },
   paso:1,
   pasoPersonal:null,
+  nombre:"",
   esperado:0,
   contado:0,
   pila:[],
@@ -256,6 +284,7 @@ try{
       est.ajustes = Object.assign(est.ajustes, g.ajustes || {});
       est.paso = g.paso || 1;
       est.pasoPersonal = g.pasoPersonal || null;
+      est.nombre = g.nombre || "";
       est.esperado = g.esperado || 0;
       est.contado = g.contado || 0;
       est.pila = Array.isArray(g.pila) ? g.pila : [];
@@ -345,6 +374,26 @@ function elegirPaso(n){
   pintar();
 }
 
+/* ---------- atajos del total esperado ---------- */
+function pintarRapidos(){
+  var caja = $("rapidos");
+  caja.innerHTML = "";
+  ESPERADOS_RAPIDOS.forEach(function(n){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "num";
+    b.textContent = n;
+    b.setAttribute("aria-pressed", est.esperado === n ? "true" : "false");
+    b.addEventListener("click", function(){ ponerEsperado(n); });
+    caja.appendChild(b);
+  });
+}
+function ponerEsperado(n){
+  est.esperado = Math.max(0, Math.min(999999, n));
+  guardar();
+  pintar();
+}
+
 /* ---------- pintar ---------- */
 function irA(p){
   document.body.dataset.pantalla = p;
@@ -361,6 +410,11 @@ function pintar(){
   if(document.activeElement !== $("esperado")){
     $("esperado").value = est.esperado ? est.esperado : "";
   }
+  if(document.activeElement !== $("nombre")) $("nombre").value = est.nombre;
+  $("menosEsperado").disabled = est.esperado <= 0;
+  Array.prototype.forEach.call($("rapidos").children, function(b){
+    b.setAttribute("aria-pressed", est.esperado === Number(b.textContent) ? "true" : "false");
+  });
 
   var hayTotal = est.esperado > 0;
   var falta = est.esperado - est.contado;
@@ -434,6 +488,17 @@ $("esperado").addEventListener("input", function(){
 $("esperado").addEventListener("keydown", function(ev){
   if(ev.key === "Enter") $("esperado").blur();
 });
+$("masEsperado").addEventListener("click", function(){ ponerEsperado(est.esperado + 1); });
+$("menosEsperado").addEventListener("click", function(){ ponerEsperado(est.esperado - 1); });
+
+/* ---------- qué se está contando ---------- */
+$("nombre").addEventListener("input", function(){
+  est.nombre = $("nombre").value;
+  guardar();
+});
+$("nombre").addEventListener("keydown", function(ev){
+  if(ev.key === "Enter") $("nombre").blur();
+});
 
 /* ---------- hojas ---------- */
 function abrir(h){ $(h).dataset.abierta = "1"; }
@@ -453,13 +518,12 @@ $("terminar").addEventListener("click", function(){
     : (dif === 0 ? "Cuadra con lo esperado."
                  : (dif > 0 ? "Hay " + dif + " de más de lo esperado."
                             : "Faltan " + (-dif) + " para lo esperado."));
-  $("nombre").value = "";
   abrir("hojaResumen");
 });
 $("seguirContando").addEventListener("click", function(){ cerrar("hojaResumen"); });
 $("guardarConteo").addEventListener("click", function(){
   est.historial.unshift({
-    nombre: $("nombre").value.trim(),
+    nombre: est.nombre.trim(),
     total: est.esperado,
     contado: est.contado,
     paso: est.paso,
@@ -537,6 +601,7 @@ function pintarHistorial(){
     rep.className = "icono"; rep.type = "button"; rep.textContent = "↻";
     rep.setAttribute("aria-label", "Contar otra vez lo mismo");
     rep.addEventListener("click", function(){
+      est.nombre = h.nombre || "";
       est.esperado = h.total || 0;
       est.contado = 0; est.pila = []; est.inicio = null;
       est.paso = h.paso || 1;
@@ -581,6 +646,7 @@ $("borrarTodo").addEventListener("click", function(){
 
 /* ---------- arranque ---------- */
 pintarPasos();
+pintarRapidos();
 pintarAjustes();
 pintarHistorial();
 pintar();
