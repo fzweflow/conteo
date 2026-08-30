@@ -114,7 +114,8 @@ if (!/#contador\{\s*flex:1/.test(web)) probs.push("el botón dejó de llenar su 
 /* los colores del CSS y los de paletas.json tienen que seguir siendo los mismos */
 const paletas = JSON.parse(fs.readFileSync(path.join(dir, "paletas.json"), "utf8"));
 const claro = paletas.paletas.conteo.claro;
-[["--fondo", claro.fondo], ["--acento", claro.acento], ["--tinta", claro.tinta], ["--exceso", claro.exceso]]
+[["--fondo", claro.fondo], ["--acento", claro.acento], ["--tinta", claro.tinta], ["--exceso", claro.exceso],
+ ["--rampaInicio", claro.rampaInicio], ["--rampaMedio", claro.rampaMedio]]
   .forEach(([tok, val]) => {
     if (!web.includes(tok + ":" + val)) probs.push("el CSS y paletas.json no coinciden en " + tok + " (" + val + ")");
   });

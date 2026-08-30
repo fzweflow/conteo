@@ -13,12 +13,14 @@
 :root{
   --fondo:#F3F5F3; --panel:#FFFFFF; --tinta:#131A18; --suave:#55605D;
   --borde:#D3D9D6; --acento:#0B6E58; --sobre-acento:#FFFFFF; --exceso:#9C3714;
+  --rampaInicio:#2C5F7A; --rampaMedio:#0E6B70;
   --sombra:0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.06);
 }
 @media (prefers-color-scheme: dark){
   :root{
     --fondo:#0E1311; --panel:#171E1B; --tinta:#E9EEEB; --suave:#9FABA7;
     --borde:#2B3531; --acento:#3DBB9B; --sobre-acento:#04140F; --exceso:#FF9166;
+    --rampaInicio:#7FB0C9; --rampaMedio:#4FC2BE;
     --sombra:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
   }
 }
@@ -105,8 +107,8 @@ body.exceso .barraProg span{background:var(--exceso)}
 #contador .mas{font-size:clamp(40px, 13vw, 66px); font-weight:700; letter-spacing:-.02em}
 #contador .cada{font-size:13px; opacity:.85; font-weight:600}
 #contador:active{transform:scale(.97)}
-body.completo #contador{background:color-mix(in srgb, var(--acento) 84%, var(--tinta))}
-body.exceso   #contador{background:var(--exceso)}
+/* el color del botón lo pone pintar() con la rampa; pasarse manda sobre todo */
+body.exceso #contador{background:var(--exceso) !important}
 
 /* ---------- fichas de paso ----------
    Son nueve: van compactas a propósito, porque cada píxel que se llevan aquí
@@ -465,6 +467,20 @@ function irA(p){
   if(p === "contar") pedirPantalla(); else soltarPantalla();
   window.scrollTo(0, 0);
 }
+/* El botón viaja por una rampa de tres paradas a medida que avanza el conteo:
+   azul acero al empezar, turquesa a media cuenta y el verde de la marca al
+   llegar. Las tres paradas viven en las variables de color, así la rampa
+   cambia sola entre claro y oscuro y el verificador de contraste la revisa.
+   Pasarse no es un punto más de la rampa: ahí manda el rojo del CSS.       */
+function pintarColorBoton(hayTotal, falta){
+  var btn = $("contador");
+  if(!hayTotal || falta < 0){ btn.style.background = ""; return; }
+  var p = Math.min(est.contado / est.esperado, 1);
+  btn.style.background = p <= 0.5
+    ? "color-mix(in oklab, var(--rampaMedio) " + (p * 200).toFixed(1) + "%, var(--rampaInicio))"
+    : "color-mix(in oklab, var(--acento) " + ((p - 0.5) * 200).toFixed(1) + "%, var(--rampaMedio))";
+}
+
 function pintar(){
   $("masPaso").textContent = "+" + est.paso;
   $("restar").innerHTML = "&minus;" + est.paso;
@@ -490,6 +506,7 @@ function pintar(){
   $("barra").style.width = hayTotal ? Math.min(est.contado / est.esperado, 1) * 100 + "%" : "0%";
   document.body.classList.toggle("completo", hayTotal && falta === 0);
   document.body.classList.toggle("exceso",   hayTotal && falta < 0);
+  pintarColorBoton(hayTotal, falta);
 }
 
 /* ---------- contar ---------- */

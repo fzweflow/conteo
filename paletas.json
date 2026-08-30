@@ -1,14 +1,71 @@
 {
   "pares": [
-    ["texto principal",   "tinta",       "fondo",  4.5],
-    ["texto secundario",  "suave",       "fondo",  4.5],
-    ["texto sobre panel", "tinta",       "panel",  4.5],
-    ["secundario sobre panel", "suave",  "panel",  4.5],
-    ["número en el botón", "sobreAcento", "acento", 4.5],
-    ["acento sobre fondo", "acento",     "fondo",  3.0],
-    ["acento sobre panel", "acento",     "panel",  3.0],
-    ["exceso sobre fondo", "exceso",     "fondo",  4.5],
-    ["exceso sobre panel", "exceso",     "panel",  4.5]
+    [
+      "texto principal",
+      "tinta",
+      "fondo",
+      4.5
+    ],
+    [
+      "texto secundario",
+      "suave",
+      "fondo",
+      4.5
+    ],
+    [
+      "texto sobre panel",
+      "tinta",
+      "panel",
+      4.5
+    ],
+    [
+      "secundario sobre panel",
+      "suave",
+      "panel",
+      4.5
+    ],
+    [
+      "número en el botón",
+      "sobreAcento",
+      "acento",
+      4.5
+    ],
+    [
+      "acento sobre fondo",
+      "acento",
+      "fondo",
+      3
+    ],
+    [
+      "acento sobre panel",
+      "acento",
+      "panel",
+      3
+    ],
+    [
+      "exceso sobre fondo",
+      "exceso",
+      "fondo",
+      4.5
+    ],
+    [
+      "exceso sobre panel",
+      "exceso",
+      "panel",
+      4.5
+    ],
+    [
+      "botón al empezar",
+      "sobreAcento",
+      "rampaInicio",
+      4.5
+    ],
+    [
+      "botón a media cuenta",
+      "sobreAcento",
+      "rampaMedio",
+      4.5
+    ]
   ],
   "paletas": {
     "conteo": {
@@ -20,7 +77,9 @@
         "borde": "#D3D9D6",
         "acento": "#0B6E58",
         "sobreAcento": "#FFFFFF",
-        "exceso": "#9C3714"
+        "exceso": "#9C3714",
+        "rampaInicio": "#2C5F7A",
+        "rampaMedio": "#0E6B70"
       },
       "oscuro": {
         "fondo": "#0E1311",
@@ -30,7 +89,9 @@
         "borde": "#2B3531",
         "acento": "#3DBB9B",
         "sobreAcento": "#04140F",
-        "exceso": "#FF9166"
+        "exceso": "#FF9166",
+        "rampaInicio": "#7FB0C9",
+        "rampaMedio": "#4FC2BE"
       }
     }
   }

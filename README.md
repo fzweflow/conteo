@@ -82,6 +82,22 @@ El tic sale de un listener delegado sobre todos los `button`; los que tienen
 sonido propio llevan el atributo `data-son="propio"` para no sonar dos veces.
 Todo respeta el interruptor de Ajustes.
 
+## Color del botón
+
+El botón viaja por una rampa de tres paradas según lo que llevas contado: azul
+acero al empezar, turquesa a media cuenta y el verde de la marca al llegar. Se
+interpola con `color-mix(in oklab, …)` sobre las variables `--rampaInicio`,
+`--rampaMedio` y `--acento`, así que la rampa cambia sola entre claro y oscuro
+y `contraste.js` puede revisar sus paradas como cualquier otro par de color.
+
+Pasarse **no es una parada más de la rampa**: ahí se borra el color en línea y
+manda el rojo del CSS, que ya no cambia por mucho que sigas contando. El sonido
+hace lo mismo: una cuadrada grave de 196 Hz, siempre la misma.
+
+Si mides el color con `getComputedStyle` durante la transición vas a leer
+siempre el mismo valor; lee `el.style.background` y resuélvelo en un elemento
+sin transición.
+
 ## Publicación
 
 GitHub → Cloudflare Pages. Configuración: framework preset `None`, build command
