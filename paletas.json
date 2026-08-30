@@ -1,0 +1,37 @@
+{
+  "pares": [
+    ["texto principal",   "tinta",       "fondo",  4.5],
+    ["texto secundario",  "suave",       "fondo",  4.5],
+    ["texto sobre panel", "tinta",       "panel",  4.5],
+    ["secundario sobre panel", "suave",  "panel",  4.5],
+    ["número en el botón", "sobreAcento", "acento", 4.5],
+    ["acento sobre fondo", "acento",     "fondo",  3.0],
+    ["acento sobre panel", "acento",     "panel",  3.0],
+    ["exceso sobre fondo", "exceso",     "fondo",  4.5],
+    ["exceso sobre panel", "exceso",     "panel",  4.5]
+  ],
+  "paletas": {
+    "conteo": {
+      "claro": {
+        "fondo": "#F3F5F3",
+        "panel": "#FFFFFF",
+        "tinta": "#131A18",
+        "suave": "#55605D",
+        "borde": "#D3D9D6",
+        "acento": "#0B6E58",
+        "sobreAcento": "#FFFFFF",
+        "exceso": "#9C3714"
+      },
+      "oscuro": {
+        "fondo": "#0E1311",
+        "panel": "#171E1B",
+        "tinta": "#E9EEEB",
+        "suave": "#9FABA7",
+        "borde": "#2B3531",
+        "acento": "#3DBB9B",
+        "sobreAcento": "#04140F",
+        "exceso": "#FF9166"
+      }
+    }
+  }
+}
