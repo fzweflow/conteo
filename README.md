@@ -1,5 +1,7 @@
 # Conteo
 
+En vivo: **https://conteo.pages.dev**  ·  Repo: **github.com/fzweflow/conteo**
+
 Contador de inventario para el teléfono. Una sola pantalla: arriba escribes el
 total esperado, al costado va lo que llevas contado en grande y lo que falta, y
 abajo el botón que ocupa cerca de la mitad de la pantalla. Sin cuentas, sin
@@ -106,5 +108,8 @@ sin transición.
 
 ## Publicación
 
-GitHub → Cloudflare Pages. Configuración: framework preset `None`, build command
-`node build.js`, output directory `dist`.
+Publicada en **https://conteo.pages.dev** (proyecto de Cloudflare Pages `conteo`,
+conectado a `fzweflow/conteo`, rama `main`). Cada push a `main` redespliega solo.
+
+Configuración del proyecto: framework preset `None`, build command `node build.js`,
+output directory `dist`.
