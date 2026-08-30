@@ -57,6 +57,9 @@ el nombre, el esperado, el conteo en curso y el historial (máximo 200).
 - **Hubo un modo "conteo a ciegas"** (escondía el total mientras contabas, porque
   ver la cifra esperada empuja a cuadrarla) y se sacó al simplificar: choca con
   una pantalla cuyo primer elemento es justamente el total esperado.
+- **"A cero" no pregunta nada.** Se apila como un movimiento más, así Deshacer
+  lo devuelve entero si fue sin querer; un cuadro de confirmación en un botón
+  que se usa entre conteo y conteo solo estorba.
 - **El conteo en curso se guarda en cada pulsación.** Si se cierra la app, al
   volver sigue donde iba.
 

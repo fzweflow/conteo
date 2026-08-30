@@ -121,9 +121,9 @@ body.exceso   #contador{background:var(--exceso)}
 #otroPaso::-webkit-outer-spin-button,#otroPaso::-webkit-inner-spin-button{-webkit-appearance:none; margin:0}
 
 /* ---------- fila inferior ---------- */
-.fila{display:flex; gap:8px}
-.fila button{flex:1; min-height:52px; border-radius:14px; border:1px solid var(--borde);
-  background:var(--panel); font-size:15px; font-weight:600}
+.fila{display:flex; gap:6px}
+.fila button{flex:1; min-width:0; min-height:52px; border-radius:14px; border:1px solid var(--borde);
+  background:var(--panel); font-size:14px; font-weight:600; padding:0 4px}
 .fila button:disabled{opacity:.35}
 .fila button:active:not(:disabled){transform:scale(.98)}
 #terminar{background:var(--acento); color:var(--sobre-acento); border-color:var(--acento)}
@@ -211,6 +211,7 @@ body.exceso   #contador{background:var(--exceso)}
   <div class="fila">
     <button id="deshacer" type="button">Deshacer</button>
     <button id="restar" type="button" class="num">&minus;1</button>
+    <button id="aCero" type="button">A cero</button>
     <button id="terminar" type="button">Terminar</button>
   </div>
 </section>
@@ -237,7 +238,6 @@ body.exceso   #contador{background:var(--exceso)}
     <label class="opcion"><span><span class="txt">Pantalla siempre encendida</span><p>Mientras estás contando.</p></span>
       <input type="checkbox" id="ajPantalla"></label>
     <button class="principal" id="cerrarAjustes" type="button">Listo</button>
-    <button class="secundario" id="ponerEnCero" type="button">Poner el conteo en cero</button>
   </div>
 </div>
 
@@ -406,6 +406,7 @@ function pintar(){
   $("contado").textContent = est.contado;
   $("deshacer").disabled = !est.pila.length;
   $("restar").disabled = est.contado <= 0;
+  $("aCero").disabled = est.contado <= 0;
   $("cada").textContent = est.contado === 0 ? "toca para contar" : "por pulsación";
   if(document.activeElement !== $("esperado")){
     $("esperado").value = est.esperado ? est.esperado : "";
@@ -465,6 +466,13 @@ contadorBtn.addEventListener("contextmenu", function(ev){ ev.preventDefault(); }
 
 $("restar").addEventListener("click", function(){ aplicar(-est.paso); });
 $("deshacer").addEventListener("click", deshacer);
+
+/* Volver a cero sin preguntar: se apila como un movimiento más, así Deshacer
+   lo devuelve entero si fue sin querer. Un cuadro de confirmación aquí sobra. */
+$("aCero").addEventListener("click", function(){
+  if(!est.contado) return;
+  aplicar(-est.contado);
+});
 
 document.addEventListener("keydown", function(ev){
   if(document.body.dataset.pantalla !== "contar") return;
@@ -553,13 +561,6 @@ function pintarAjustes(){
 });
 $("verAjustes").addEventListener("click", function(){ pintarAjustes(); abrir("hojaAjustes"); });
 $("cerrarAjustes").addEventListener("click", function(){ cerrar("hojaAjustes"); });
-$("ponerEnCero").addEventListener("click", function(){
-  if(est.contado && !confirm("¿Poner el conteo en cero sin guardarlo?")) return;
-  est.contado = 0; est.pila = []; est.inicio = null;
-  guardar();
-  cerrar("hojaAjustes");
-  pintar();
-});
 
 /* ---------- historial ---------- */
 function fechaCorta(ms){
