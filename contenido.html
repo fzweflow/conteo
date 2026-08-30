@@ -325,7 +325,8 @@ function $(id){ return document.getElementById(id); }
    Las notas van en una escala pentatónica sobre DO5 para que la subida suene
    a escala y no a sirena.                                                   */
 var DO5 = 523.25;
-var ESCALA = [0, 2, 4, 7, 9, 12];   /* semitonos: pentatónica mayor */
+var BASE_ESCALA = 392.00;   /* SOL4: abajo de esto el parlante del teléfono no rinde */
+var RANGO = 19;             /* semitonos que abarca la subida: SOL4 → RE6 */
 function nota(semis, base){ return (base || DO5) * Math.pow(2, semis / 12); }
 
 var audio = null;
@@ -368,11 +369,18 @@ function pip(hz, dur, vol, tipo, retraso, armonico){
   }catch(e){}
 }
 
-/* el tono del botón grande sube por la escala según lo que falta */
+/* El tono del botón grande reparte la escala entre el total: cada pulsación
+   cae en su propio escalón y ninguna repite la anterior. Si las pulsaciones
+   que faltan caben en los 19 semitonos, cada nota se ajusta a un semitono
+   exacto y suena a escala; si son más, los escalones se parten en fracciones
+   —siguen siendo todos distintos, que es lo que no puede fallar.           */
 function tonoDelPaso(){
-  if(est.esperado <= 0) return nota(0);
+  if(est.esperado <= 0) return BASE_ESCALA;
   var p = Math.min(est.contado / est.esperado, 1);
-  return nota(ESCALA[Math.round(p * (ESCALA.length - 1))]);
+  var pulsaciones = Math.ceil(est.esperado / Math.max(est.paso, 1));
+  var semis = p * RANGO;
+  if(pulsaciones <= RANGO) semis = Math.round(semis);
+  return BASE_ESCALA * Math.pow(2, semis / 12);
 }
 
 function sonido(que){

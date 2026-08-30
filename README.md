@@ -77,7 +77,7 @@ Sintetizado con WebAudio, sin archivos. Dos familias que no se confunden:
 
 | Acción | Sonido |
 |---|---|
-| Botón de contar | Triangular con la octava encima, **sube por la escala** según lo que falta: DO RE MI SOL LA DO (523→1047 Hz) |
+| Botón de contar | Triangular con la octava encima. **La escala se reparte entre el total**: 19 semitonos (SOL4→RE6) divididos por las pulsaciones que faltan, así ninguna nota repite a la anterior |
 | Se completa el esperado | Acorde DO-MI-SOL-DO ascendente |
 | Contar de más | Cuadrada grave, 196 Hz |
 | Restar | 392 Hz |
@@ -85,6 +85,12 @@ Sintetizado con WebAudio, sin archivos. Dos familias que no se confunden:
 | Resetear | Tres notas hacia abajo (659→494→330) |
 | Guardar el conteo | DO-SOL-MI descendente, el único que cierra |
 | Cualquier otro botón | Tic fino de 1396 Hz, corto y bajo |
+
+Si las pulsaciones caben en los 19 semitonos, cada nota se ajusta a un semitono
+exacto y suena a escala; si son más (contar 100 de a uno), los escalones se
+parten en fracciones de semitono: siguen siendo todas distintas, que es lo que
+no puede fallar. Verificado con totales de 7, 12, 20 y 100: cero repeticiones y
+siempre ascendente.
 
 El tic sale de un listener delegado sobre todos los `button`; los que tienen
 sonido propio llevan el atributo `data-son="propio"` para no sonar dos veces.
