@@ -1,9 +1,9 @@
 # Conteo
 
-Contador de inventario para el teléfono. Ingresas el total a contar, tocas el
-botón grande y la app lleva la cuenta: cuántos van, cuántos faltan y cuánto
-suma cada pulsación. Sin cuentas, sin servidor, sin conexión: todo vive en el
-navegador del teléfono.
+Contador de inventario para el teléfono. Una sola pantalla: arriba escribes el
+total esperado, al costado va lo que llevas contado en grande y lo que falta, y
+abajo el botón que ocupa cerca de la mitad de la pantalla. Sin cuentas, sin
+servidor, sin conexión: todo vive en el navegador del teléfono.
 
 ## Cómo se construye
 
@@ -36,18 +36,23 @@ el conteo en curso y el historial (máximo 200).
 - **El botón ocupa cerca de la mitad de la pantalla.** No es capricho: se usa de
   pie, con una mano ocupada. Es un rectángulo redondeado y no un círculo porque
   un círculo lo limita el ancho del teléfono y se queda en un cuarto de la
-  pantalla. Medido: 49% del área en 375×812, 54% en 430×932, 38% en 360×640.
-  El botón se estira con `flex:1` dentro de `.zona`; ponerle un alto fijo lo
-  rompe, y por eso el build lo comprueba.
+  pantalla. Medido: 56% del área en 375×812, 38% en 360×640. El botón se estira
+  con `flex:1` dentro de `.zona`; ponerle un alto fijo lo rompe, y por eso el
+  build lo comprueba. Todo lo que se agregue a la pantalla se lo come a él.
+- **Una sola pantalla, sin paso previo.** El total esperado es un campo que se
+  puede escribir o corregir en cualquier momento, incluso contando. Sin total
+  la app cuenta igual y dice "escribe el total".
 - **Cuenta en `pointerdown`, no en `click`.** Con `click` se siente lento cuando
   vas rápido.
 - **Deshacer usa una pila de deltas**, no un contador de pulsaciones: así deshace
   bien aunque hayas cambiado cuánto suma cada pulsación a mitad de camino.
 - **Pasarse del total no se bloquea.** Contar de más es un dato del inventario,
   no un error de la app: se marca en rojo y se guarda la diferencia.
-- **Conteo a ciegas** (en Ajustes) esconde el total y lo que falta hasta
-  terminar. Ver la cifra esperada mientras cuentas empuja a cuadrarla; es la
-  razón por la que el conteo ciego es práctica estándar de inventario.
+- **El nombre de lo que se cuenta se pide al terminar, no antes.** Antes ocupaba
+  un campo en la portada y retrasaba el primer toque.
+- **Hubo un modo "conteo a ciegas"** (escondía el total mientras contabas, porque
+  ver la cifra esperada empuja a cuadrarla) y se sacó al simplificar: choca con
+  una pantalla cuyo primer elemento es justamente el total esperado.
 - **El conteo en curso se guarda en cada pulsación.** Si se cierra la app, al
   volver sigue donde iba.
 

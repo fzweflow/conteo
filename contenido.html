@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Conteo</title>
-<meta name="description" content="Cuenta inventario con un botón grande: total, contados, restantes y cuánto suma cada pulsación.">
+<meta name="description" content="Contador de inventario: escribes el total esperado, cuentas con un botón grande y ves lo que llevas y lo que falta.">
 <!--%%APP%%-->
 <style>
 /* ---------- colores ----------
@@ -36,65 +36,46 @@ button,input{font:inherit; color:inherit}
 button{cursor:pointer}
 .num{font-variant-numeric:tabular-nums; font-feature-settings:"tnum"}
 
-/* una pantalla a la vez */
 .pantalla{display:none; min-height:100vh; min-height:100dvh; flex-direction:column;
-  padding:max(14px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
-  gap:14px; max-width:560px; margin:0 auto}
-body[data-pantalla="preparar"] #preparar,
-body[data-pantalla="contar"]   #contar,
+  padding:max(10px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
+  gap:12px; max-width:560px; margin:0 auto}
+body[data-pantalla="contar"]    #contar,
 body[data-pantalla="historial"] #historial{display:flex}
 
-/* ---------- barra superior ---------- */
-.barra{display:flex; align-items:center; gap:10px; min-height:44px}
-.barra h1{font-size:19px; margin:0; font-weight:650; letter-spacing:-.01em}
-.barra .crece{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:650}
-.icono{border:1px solid var(--borde); background:var(--panel); border-radius:12px;
-  min-width:44px; height:44px; display:grid; place-items:center; font-size:15px; padding:0 12px; font-weight:600}
-.icono:active{transform:scale(.96)}
+/* ---------- barra fina de arriba ---------- */
+.barra{display:flex; align-items:center; gap:8px; min-height:34px}
+.barra h1{font-size:18px; margin:0; font-weight:650}
+.barra .crece{flex:1}
+.ligero{background:none; border:none; color:var(--suave); font-size:14px; font-weight:600;
+  padding:8px 6px; border-radius:10px}
+.ligero:active{color:var(--tinta)}
 
-/* ---------- formulario ---------- */
-.campo{display:flex; flex-direction:column; gap:7px}
-.campo label{font-size:13px; color:var(--suave); font-weight:600; letter-spacing:.01em}
-.campo input{background:var(--panel); border:1px solid var(--borde); border-radius:14px;
-  padding:14px 16px; font-size:17px; width:100%; outline:none}
-.campo input:focus{border-color:var(--acento); box-shadow:0 0 0 3px color-mix(in srgb, var(--acento) 22%, transparent)}
-#total{font-size:30px; font-weight:650; letter-spacing:-.02em; padding:16px}
-.pista{font-size:13px; color:var(--suave); margin:0; line-height:1.45}
+/* ---------- cabecera: esperado | contado | falta ---------- */
+.cabecera{display:flex; align-items:center; gap:14px; background:var(--panel);
+  border:1px solid var(--borde); border-radius:18px; padding:12px 14px}
+.esperado{display:flex; flex-direction:column; gap:4px; flex:none}
+.esperado label{font-size:12px; color:var(--suave); font-weight:600}
+#esperado{width:104px; background:var(--fondo); border:1px solid var(--borde); border-radius:12px;
+  padding:10px 12px; font-size:24px; font-weight:700; letter-spacing:-.02em; text-align:center;
+  outline:none; -moz-appearance:textfield}
+#esperado::-webkit-outer-spin-button,#esperado::-webkit-inner-spin-button{-webkit-appearance:none; margin:0}
+#esperado:focus{border-color:var(--acento); box-shadow:0 0 0 3px color-mix(in srgb, var(--acento) 22%, transparent)}
 
-/* ---------- fichas de paso ---------- */
-.pasos{display:flex; flex-wrap:wrap; gap:8px}
-.ficha{border:1px solid var(--borde); background:var(--panel); border-radius:999px;
-  padding:10px 15px; font-size:15px; font-weight:600; min-height:44px}
-.ficha[aria-pressed="true"]{background:var(--acento); color:var(--sobre-acento); border-color:var(--acento)}
-#otroPaso{width:96px; padding:10px 14px; border-radius:999px; text-align:center; font-weight:600;
-  background:var(--panel); border:1px solid var(--borde); min-height:44px; outline:none}
+.marcador{flex:1; min-width:0; text-align:right}
+#contado{font-size:clamp(46px, 15vw, 76px); font-weight:700; line-height:1; letter-spacing:-.03em}
+#falta{font-size:14px; color:var(--suave); font-weight:600; margin-top:4px}
+body.completo #contado, body.completo #falta{color:var(--acento)}
+body.exceso   #contado, body.exceso   #falta{color:var(--exceso)}
 
-/* ---------- botón principal ---------- */
-.principal{border:none; border-radius:16px; background:var(--acento); color:var(--sobre-acento);
-  padding:17px; font-size:17px; font-weight:650; width:100%}
-.principal:disabled{opacity:.4}
-.principal:active:not(:disabled){transform:scale(.99)}
-
-/* ---------- marcador ---------- */
-.marcador{text-align:center}
-.contado{font-size:clamp(56px, 20vw, 104px); font-weight:700; line-height:1; letter-spacing:-.03em}
-.deTotal{font-size:15px; color:var(--suave); margin-top:6px; min-height:20px}
-.deTotal b{color:var(--tinta); font-weight:650}
-.barraProg{height:8px; border-radius:99px; background:var(--borde); overflow:hidden; margin-top:12px}
+.barraProg{height:6px; border-radius:99px; background:var(--borde); overflow:hidden}
 .barraProg span{display:block; height:100%; width:0; background:var(--acento);
   transition:width .18s ease; border-radius:99px}
-body.completo .contado{color:var(--acento)}
-body.exceso  .contado{color:var(--exceso)}
-body.exceso  .barraProg span{background:var(--exceso)}
-.estadoConteo{font-size:14px; font-weight:650; margin-top:10px; min-height:19px}
-body.completo .estadoConteo{color:var(--acento)}
-body.exceso   .estadoConteo{color:var(--exceso)}
+body.exceso .barraProg span{background:var(--exceso)}
 
 /* ---------- el botón de contar: la mitad de la pantalla ----------
    Un círculo lo limita el ancho del teléfono y se queda en un cuarto de la
-   pantalla; este rectángulo redondeado llena la zona central entera, que en
-   un teléfono típico es alrededor del 45-50% del alto.                     */
-.zona{flex:1; display:flex; min-height:180px}
+   pantalla; este rectángulo redondeado llena la zona central entera.       */
+.zona{flex:1; display:flex; min-height:170px}
 #contador{
   flex:1; width:100%; border-radius:34px;
   border:none; background:var(--acento); color:var(--sobre-acento);
@@ -104,9 +85,17 @@ body.exceso   .estadoConteo{color:var(--exceso)}
 }
 #contador .mas{font-size:clamp(40px, 13vw, 66px); font-weight:700; letter-spacing:-.02em}
 #contador .cada{font-size:13px; opacity:.85; font-weight:600}
-#contador:active{transform:scale(.965)}
+#contador:active{transform:scale(.97)}
 body.completo #contador{background:color-mix(in srgb, var(--acento) 84%, var(--tinta))}
-body.exceso  #contador{background:var(--exceso)}
+body.exceso   #contador{background:var(--exceso)}
+
+/* ---------- fichas de paso ---------- */
+.pasos{display:flex; flex-wrap:wrap; gap:8px}
+.ficha{border:1px solid var(--borde); background:var(--panel); border-radius:999px;
+  padding:9px 15px; font-size:15px; font-weight:600; min-height:44px}
+.ficha[aria-pressed="true"]{background:var(--acento); color:var(--sobre-acento); border-color:var(--acento)}
+#otroPaso{width:82px; padding:9px 10px; border-radius:999px; text-align:center; font-weight:600;
+  background:var(--panel); border:1px solid var(--borde); min-height:44px; outline:none}
 
 /* ---------- fila inferior ---------- */
 .fila{display:flex; gap:8px}
@@ -116,7 +105,7 @@ body.exceso  #contador{background:var(--exceso)}
 .fila button:active:not(:disabled){transform:scale(.98)}
 #terminar{background:var(--acento); color:var(--sobre-acento); border-color:var(--acento)}
 
-/* ---------- hojas (ajustes y resumen) ---------- */
+/* ---------- hojas ---------- */
 .hoja{position:fixed; inset:0; background:rgba(0,0,0,.45); display:none;
   align-items:flex-end; justify-content:center; z-index:9}
 .hoja[data-abierta="1"]{display:flex}
@@ -126,9 +115,18 @@ body.exceso  #contador{background:var(--exceso)}
 .hoja h2{margin:0; font-size:18px}
 .opcion{display:flex; align-items:center; gap:12px; justify-content:space-between;
   padding:12px 0; border-bottom:1px solid var(--borde)}
+.opcion:last-of-type{border-bottom:none}
 .opcion p{margin:2px 0 0; font-size:13px; color:var(--suave); line-height:1.4}
 .opcion input{width:24px; height:24px; accent-color:var(--acento); flex:none}
 .opcion .txt{font-size:15px; font-weight:600}
+#nombre{background:var(--fondo); border:1px solid var(--borde); border-radius:14px;
+  padding:13px 15px; font-size:16px; width:100%; outline:none}
+#nombre:focus{border-color:var(--acento)}
+.principal{border:none; border-radius:16px; background:var(--acento); color:var(--sobre-acento);
+  padding:16px; font-size:17px; font-weight:650; width:100%}
+.principal:active{transform:scale(.99)}
+.secundario{background:none; border:none; color:var(--acento); font-weight:650; font-size:15px; padding:10px}
+.pista{font-size:13px; color:var(--suave); margin:0; line-height:1.45}
 
 /* ---------- resumen y historial ---------- */
 .cifras{display:flex; gap:10px; text-align:center}
@@ -145,52 +143,34 @@ body.exceso  #contador{background:var(--exceso)}
   border:1px solid var(--borde); white-space:nowrap}
 .dif.ok{color:var(--acento); border-color:color-mix(in srgb, var(--acento) 45%, var(--borde))}
 .dif.mal{color:var(--exceso); border-color:color-mix(in srgb, var(--exceso) 45%, var(--borde))}
+.icono{border:1px solid var(--borde); background:var(--panel); border-radius:12px;
+  min-width:44px; height:44px; display:grid; place-items:center; font-size:15px; font-weight:600}
 .vacio{color:var(--suave); font-size:14px; text-align:center; padding:40px 20px; line-height:1.5}
-.secundario{background:none; border:none; color:var(--acento); font-weight:650; font-size:15px; padding:12px}
 </style>
 </head>
-<body data-pantalla="preparar">
+<body data-pantalla="contar">
 
-<!-- ============ 1. preparar ============ -->
-<section class="pantalla" id="preparar">
-  <div class="barra">
-    <h1 class="crece">Conteo</h1>
-    <button class="icono" id="verHistorial" type="button">Historial</button>
-  </div>
-
-  <div class="campo">
-    <label for="nombre">Qué estás contando <span style="font-weight:400">(opcional)</span></label>
-    <input id="nombre" type="text" placeholder="Ej: Interruptores 2P 25A" autocomplete="off" enterkeyhint="next">
-  </div>
-
-  <div class="campo">
-    <label for="total">Total a contar</label>
-    <input id="total" type="number" inputmode="numeric" min="1" max="999999" placeholder="0" enterkeyhint="go">
-  </div>
-
-  <div class="campo">
-    <label>Cada pulsación suma</label>
-    <div class="pasos" id="pasosPreparar"></div>
-  </div>
-
-  <p class="pista" id="pistaSeguir" hidden></p>
-  <div style="flex:1"></div>
-  <button class="principal" id="empezar" type="button" disabled>Empezar a contar</button>
-</section>
-
-<!-- ============ 2. contar ============ -->
+<!-- ============ pantalla única: contar ============ -->
 <section class="pantalla" id="contar">
   <div class="barra">
-    <span class="crece" id="tituloConteo"></span>
-    <button class="icono" id="verAjustes" type="button" aria-label="Ajustes">Ajustes</button>
+    <button class="ligero" id="verHistorial" type="button">Historial</button>
+    <span class="crece"></span>
+    <button class="ligero" id="verAjustes" type="button">Ajustes</button>
   </div>
 
-  <div class="marcador">
-    <div class="contado num" id="contado">0</div>
-    <div class="deTotal num" id="deTotal"></div>
-    <div class="barraProg" id="cajaBarra"><span id="barra"></span></div>
-    <div class="estadoConteo" id="estadoConteo"></div>
+  <div class="cabecera">
+    <div class="esperado">
+      <label for="esperado">Esperado</label>
+      <input id="esperado" type="number" inputmode="numeric" min="0" max="999999" placeholder="0"
+             enterkeyhint="done" autocomplete="off">
+    </div>
+    <div class="marcador">
+      <div class="num" id="contado">0</div>
+      <div class="num" id="falta">escribe el total</div>
+    </div>
   </div>
+
+  <div class="barraProg"><span id="barra"></span></div>
 
   <div class="zona">
     <button id="contador" type="button" aria-label="Contar">
@@ -208,7 +188,7 @@ body.exceso  #contador{background:var(--exceso)}
   </div>
 </section>
 
-<!-- ============ 3. historial ============ -->
+<!-- ============ historial ============ -->
 <section class="pantalla" id="historial">
   <div class="barra">
     <button class="icono" id="volverDeHistorial" type="button" aria-label="Volver">&larr;</button>
@@ -227,25 +207,24 @@ body.exceso  #contador{background:var(--exceso)}
       <input type="checkbox" id="ajVib"></label>
     <label class="opcion"><span><span class="txt">Sonido</span><p>Un clic corto, distinto al completar.</p></span>
       <input type="checkbox" id="ajSon"></label>
-    <label class="opcion"><span><span class="txt">Conteo a ciegas</span><p>Esconde el total y lo que falta hasta terminar. Contar sabiendo la cifra esperada empuja a cuadrarla.</p></span>
-      <input type="checkbox" id="ajCiego"></label>
     <label class="opcion"><span><span class="txt">Pantalla siempre encendida</span><p>Mientras estás contando.</p></span>
       <input type="checkbox" id="ajPantalla"></label>
     <button class="principal" id="cerrarAjustes" type="button">Listo</button>
-    <button class="secundario" id="cancelarConteo" type="button">Descartar este conteo</button>
+    <button class="secundario" id="ponerEnCero" type="button">Poner el conteo en cero</button>
   </div>
 </div>
 
-<!-- ============ hoja: resumen al terminar ============ -->
+<!-- ============ hoja: terminar ============ -->
 <div class="hoja" id="hojaResumen">
   <div>
-    <h2 id="tituloResumen">Resumen</h2>
+    <h2>Terminar</h2>
     <div class="cifras">
       <div><strong class="num" id="rContado">0</strong><small>contado</small></div>
-      <div><strong class="num" id="rTotal">0</strong><small>esperado</small></div>
+      <div><strong class="num" id="rEsperado">0</strong><small>esperado</small></div>
       <div><strong class="num" id="rDif">0</strong><small>diferencia</small></div>
     </div>
     <p class="pista" id="textoResumen"></p>
+    <input id="nombre" type="text" placeholder="Qué contaste (opcional)" autocomplete="off" enterkeyhint="done">
     <button class="principal" id="guardarConteo" type="button">Guardar y empezar otro</button>
     <button class="secundario" id="seguirContando" type="button">Seguir contando</button>
   </div>
@@ -255,14 +234,18 @@ body.exceso  #contador{background:var(--exceso)}
 (function(){
 "use strict";
 
-var CLAVE = "conteo.v1";
+var CLAVE = "conteo.v2";
 var PASOS_BASE = [1, 6, 12, 24];
 
 /* ---------- estado ---------- */
 var est = {
-  ajustes:{ vib:true, son:true, ciego:false, pantalla:true },
+  ajustes:{ vib:true, son:true, pantalla:true },
+  paso:1,
   pasoPersonal:null,
-  actual:null,      /* {nombre,total,paso,contado,pila,inicio} */
+  esperado:0,
+  contado:0,
+  pila:[],
+  inicio:null,
   historial:[]
 };
 try{
@@ -271,8 +254,12 @@ try{
     var g = JSON.parse(crudo);
     if(g && typeof g === "object"){
       est.ajustes = Object.assign(est.ajustes, g.ajustes || {});
+      est.paso = g.paso || 1;
       est.pasoPersonal = g.pasoPersonal || null;
-      est.actual = g.actual || null;
+      est.esperado = g.esperado || 0;
+      est.contado = g.contado || 0;
+      est.pila = Array.isArray(g.pila) ? g.pila : [];
+      est.inicio = g.inicio || null;
       est.historial = Array.isArray(g.historial) ? g.historial : [];
     }
   }
@@ -281,9 +268,7 @@ try{
 function guardar(){
   try{ localStorage.setItem(CLAVE, JSON.stringify(est)); }catch(e){}
 }
-
 function $(id){ return document.getElementById(id); }
-var pasoElegido = 1;
 
 /* ---------- sonido y vibración ---------- */
 var audio = null;
@@ -326,45 +311,38 @@ document.addEventListener("visibilitychange", function(){
 /* ---------- fichas de paso ---------- */
 function listaPasos(){
   var p = PASOS_BASE.slice();
-  if(est.pasoPersonal && p.indexOf(est.pasoPersonal) < 0) p.push(est.pasoPersonal);
-  if(pasoElegido && p.indexOf(pasoElegido) < 0) p.push(pasoElegido);
+  [est.pasoPersonal, est.paso].forEach(function(n){ if(n && p.indexOf(n) < 0) p.push(n); });
   p.sort(function(a,b){ return a-b; });
   return p;
 }
 function pintarPasos(){
-  [["pasosPreparar", true], ["pasosContar", false]].forEach(function(par){
-    var caja = $(par[0]);
-    if(!caja) return;
-    caja.innerHTML = "";
-    listaPasos().forEach(function(n){
-      var b = document.createElement("button");
-      b.type = "button";
-      b.className = "ficha num";
-      b.textContent = "+" + n;
-      b.setAttribute("aria-pressed", n === pasoElegido ? "true" : "false");
-      b.addEventListener("click", function(){ elegirPaso(n); });
-      caja.appendChild(b);
-    });
-    if(par[1]){
-      var inp = document.createElement("input");
-      inp.type = "number"; inp.inputMode = "numeric"; inp.min = "1"; inp.max = "9999";
-      inp.id = "otroPaso"; inp.placeholder = "otro";
-      inp.setAttribute("aria-label", "Otro valor por pulsación");
-      inp.addEventListener("change", function(){
-        var n = Math.floor(Number(inp.value));
-        inp.value = "";
-        if(n > 0 && n <= 9999){ est.pasoPersonal = n; elegirPaso(n); }
-      });
-      caja.appendChild(inp);
-    }
+  var caja = $("pasosContar");
+  caja.innerHTML = "";
+  listaPasos().forEach(function(n){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "ficha num";
+    b.textContent = "+" + n;
+    b.setAttribute("aria-pressed", n === est.paso ? "true" : "false");
+    b.addEventListener("click", function(){ elegirPaso(n); });
+    caja.appendChild(b);
   });
+  var inp = document.createElement("input");
+  inp.type = "number"; inp.inputMode = "numeric"; inp.min = "1"; inp.max = "9999";
+  inp.id = "otroPaso"; inp.placeholder = "otro";
+  inp.setAttribute("aria-label", "Otro valor por pulsación");
+  inp.addEventListener("change", function(){
+    var n = Math.floor(Number(inp.value));
+    inp.value = "";
+    if(n > 0 && n <= 9999){ est.pasoPersonal = n; elegirPaso(n); }
+  });
+  caja.appendChild(inp);
 }
 function elegirPaso(n){
-  pasoElegido = n;
-  if(est.actual) est.actual.paso = n;
+  est.paso = n;
   guardar();
   pintarPasos();
-  pintarConteo();
+  pintar();
 }
 
 /* ---------- pintar ---------- */
@@ -373,43 +351,36 @@ function irA(p){
   if(p === "contar") pedirPantalla(); else soltarPantalla();
   window.scrollTo(0, 0);
 }
+function pintar(){
+  $("masPaso").textContent = "+" + est.paso;
+  $("restar").innerHTML = "&minus;" + est.paso;
+  $("contado").textContent = est.contado;
+  $("deshacer").disabled = !est.pila.length;
+  $("restar").disabled = est.contado <= 0;
+  $("cada").textContent = est.contado === 0 ? "toca para contar" : "por pulsación";
+  if(document.activeElement !== $("esperado")){
+    $("esperado").value = est.esperado ? est.esperado : "";
+  }
 
-function pintarConteo(){
-  $("masPaso").textContent = "+" + pasoElegido;
-  $("restar").innerHTML = "&minus;" + pasoElegido;
-  var a = est.actual;
-  if(!a) return;
-
-  var falta = a.total - a.contado;
-  $("contado").textContent = a.contado;
-  $("tituloConteo").textContent = a.nombre || "Sin nombre";
-  $("deshacer").disabled = !a.pila.length;
-  $("restar").disabled = a.contado <= 0;
-  $("cada").textContent = a.contado === 0 ? "toca para contar" : "por pulsación";
-
-  var ciego = est.ajustes.ciego;
-  $("deTotal").innerHTML = ciego ? "conteo a ciegas"
-    : (falta > 0 ? "faltan <b>" + falta + "</b> de " + a.total
-                 : "de " + a.total + " esperados");
-  $("cajaBarra").style.visibility = ciego ? "hidden" : "visible";
-  $("barra").style.width = Math.min(a.contado / Math.max(a.total, 1), 1) * 100 + "%";
-
-  document.body.classList.toggle("completo", !ciego && falta === 0);
-  document.body.classList.toggle("exceso",   !ciego && falta < 0);
-  $("estadoConteo").textContent = ciego ? ""
-    : (falta === 0 ? "Completo" : (falta < 0 ? (-falta) + " de más" : ""));
+  var hayTotal = est.esperado > 0;
+  var falta = est.esperado - est.contado;
+  $("falta").textContent = !hayTotal ? "escribe el total"
+    : (falta > 0 ? "faltan " + falta
+                 : (falta === 0 ? "completo" : (-falta) + " de más"));
+  $("barra").style.width = hayTotal ? Math.min(est.contado / est.esperado, 1) * 100 + "%" : "0%";
+  document.body.classList.toggle("completo", hayTotal && falta === 0);
+  document.body.classList.toggle("exceso",   hayTotal && falta < 0);
 }
 
 /* ---------- contar ---------- */
 function aplicar(delta){
-  var a = est.actual;
-  if(!a) return;
-  var antes = a.contado;
-  a.contado = Math.max(0, a.contado + delta);
-  if(a.contado === antes) return;
-  a.pila.push(a.contado - antes);
-  if(a.pila.length > 500) a.pila.shift();
-  var completo = !est.ajustes.ciego && a.contado === a.total && delta > 0;
+  var antes = est.contado;
+  est.contado = Math.max(0, est.contado + delta);
+  if(est.contado === antes) return;
+  if(!est.inicio) est.inicio = Date.now();
+  est.pila.push(est.contado - antes);
+  if(est.pila.length > 500) est.pila.shift();
+  var completo = est.esperado > 0 && est.contado === est.esperado && delta > 0;
   if(completo){
     vibrar([26,60,26]); tono(760, 0.10, 0.09);
     setTimeout(function(){ tono(1140, 0.12, 0.09); }, 95);
@@ -419,23 +390,26 @@ function aplicar(delta){
     vibrar(18); tono(420, 0.05, 0.05);
   }
   guardar();
-  pintarConteo();
+  pintar();
 }
 function deshacer(){
-  var a = est.actual;
-  if(!a || !a.pila.length) return;
-  a.contado = Math.max(0, a.contado - a.pila.pop());
+  if(!est.pila.length) return;
+  est.contado = Math.max(0, est.contado - est.pila.pop());
   vibrar(18); tono(360, 0.05, 0.05);
   guardar();
-  pintarConteo();
+  pintar();
 }
 
 /* el pointerdown cuenta en el instante del toque; con click se siente lento */
 var contadorBtn = $("contador");
-contadorBtn.addEventListener("pointerdown", function(ev){ ev.preventDefault(); aplicar(pasoElegido); });
+contadorBtn.addEventListener("pointerdown", function(ev){
+  ev.preventDefault();
+  if(document.activeElement === $("esperado")) $("esperado").blur();
+  aplicar(est.paso);
+});
 contadorBtn.addEventListener("contextmenu", function(ev){ ev.preventDefault(); });
 
-$("restar").addEventListener("click", function(){ aplicar(-pasoElegido); });
+$("restar").addEventListener("click", function(){ aplicar(-est.paso); });
 $("deshacer").addEventListener("click", deshacer);
 
 document.addEventListener("keydown", function(ev){
@@ -444,37 +418,22 @@ document.addEventListener("keydown", function(ev){
   var t = ev.target.tagName;
   if(t === "INPUT" || t === "TEXTAREA") return;
   if(ev.code === "Space" || ev.code === "Enter" || ev.code === "NumpadEnter"){
-    ev.preventDefault(); aplicar(pasoElegido);
+    ev.preventDefault(); aplicar(est.paso);
   }else if(ev.code === "Backspace"){
     ev.preventDefault(); deshacer();
   }
 });
 
-/* ---------- preparar ---------- */
-function revisarEmpezar(){
-  var n = Math.floor(Number($("total").value));
-  $("empezar").disabled = !(n > 0 && n <= 999999);
-}
-function empezar(){
-  var total = Math.floor(Number($("total").value));
-  if(!(total > 0)) return;
-  est.actual = {
-    nombre: $("nombre").value.trim(),
-    total: total,
-    paso: pasoElegido,
-    contado: 0,
-    pila: [],
-    inicio: Date.now()
-  };
+/* ---------- el total esperado, editable en cualquier momento ---------- */
+$("esperado").addEventListener("input", function(){
+  var n = Math.floor(Number($("esperado").value));
+  est.esperado = (n > 0 && n <= 999999) ? n : 0;
   guardar();
-  pintarConteo();
-  irA("contar");
-}
-$("total").addEventListener("input", revisarEmpezar);
-$("total").addEventListener("keydown", function(ev){
-  if(ev.key === "Enter" && !$("empezar").disabled) empezar();
+  pintar();
 });
-$("empezar").addEventListener("click", empezar);
+$("esperado").addEventListener("keydown", function(ev){
+  if(ev.key === "Enter") $("esperado").blur();
+});
 
 /* ---------- hojas ---------- */
 function abrir(h){ $(h).dataset.abierta = "1"; }
@@ -485,66 +444,57 @@ Array.prototype.forEach.call(document.querySelectorAll(".hoja"), function(h){
 
 /* ---------- terminar ---------- */
 $("terminar").addEventListener("click", function(){
-  var a = est.actual;
-  if(!a) return;
-  var dif = a.contado - a.total;
-  $("rContado").textContent = a.contado;
-  $("rTotal").textContent = a.total;
-  $("rDif").textContent = (dif > 0 ? "+" : "") + dif;
-  $("rDif").style.color = dif === 0 ? "var(--acento)" : "var(--exceso)";
-  $("tituloResumen").textContent = a.nombre || "Conteo sin nombre";
-  $("textoResumen").textContent = dif === 0
-    ? "Cuadra con lo esperado."
-    : (dif > 0 ? "Hay " + dif + " de más de lo esperado."
-               : "Faltan " + (-dif) + " para lo esperado.");
+  var dif = est.contado - est.esperado;
+  $("rContado").textContent = est.contado;
+  $("rEsperado").textContent = est.esperado;
+  $("rDif").textContent = (dif > 0 ? "+" : "") + (est.esperado ? dif : 0);
+  $("rDif").style.color = (!est.esperado || dif === 0) ? "var(--acento)" : "var(--exceso)";
+  $("textoResumen").textContent = !est.esperado ? "Sin total esperado: se guarda solo lo contado."
+    : (dif === 0 ? "Cuadra con lo esperado."
+                 : (dif > 0 ? "Hay " + dif + " de más de lo esperado."
+                            : "Faltan " + (-dif) + " para lo esperado."));
+  $("nombre").value = "";
   abrir("hojaResumen");
 });
 $("seguirContando").addEventListener("click", function(){ cerrar("hojaResumen"); });
 $("guardarConteo").addEventListener("click", function(){
-  var a = est.actual;
-  if(a){
-    est.historial.unshift({
-      nombre: a.nombre, total: a.total, contado: a.contado,
-      paso: a.paso, inicio: a.inicio, fin: Date.now()
-    });
-    if(est.historial.length > 200) est.historial.length = 200;
-  }
-  est.actual = null;
+  est.historial.unshift({
+    nombre: $("nombre").value.trim(),
+    total: est.esperado,
+    contado: est.contado,
+    paso: est.paso,
+    inicio: est.inicio,
+    fin: Date.now()
+  });
+  if(est.historial.length > 200) est.historial.length = 200;
+  est.contado = 0; est.pila = []; est.inicio = null;
   guardar();
   cerrar("hojaResumen");
-  $("total").value = ""; $("nombre").value = "";
-  $("pistaSeguir").hidden = true;
-  revisarEmpezar();
-  document.body.classList.remove("completo", "exceso");
   pintarHistorial();
-  irA("preparar");
+  pintar();
 });
 
 /* ---------- ajustes ---------- */
 function pintarAjustes(){
   $("ajVib").checked = est.ajustes.vib;
   $("ajSon").checked = est.ajustes.son;
-  $("ajCiego").checked = est.ajustes.ciego;
   $("ajPantalla").checked = est.ajustes.pantalla;
 }
-[["ajVib","vib"], ["ajSon","son"], ["ajCiego","ciego"], ["ajPantalla","pantalla"]].forEach(function(par){
+[["ajVib","vib"], ["ajSon","son"], ["ajPantalla","pantalla"]].forEach(function(par){
   $(par[0]).addEventListener("change", function(){
     est.ajustes[par[1]] = $(par[0]).checked;
     guardar();
     if(par[1] === "pantalla"){ if(est.ajustes.pantalla) pedirPantalla(); else soltarPantalla(); }
-    pintarConteo();
   });
 });
 $("verAjustes").addEventListener("click", function(){ pintarAjustes(); abrir("hojaAjustes"); });
 $("cerrarAjustes").addEventListener("click", function(){ cerrar("hojaAjustes"); });
-$("cancelarConteo").addEventListener("click", function(){
-  if(!confirm("¿Descartar este conteo sin guardarlo?")) return;
-  est.actual = null;
+$("ponerEnCero").addEventListener("click", function(){
+  if(est.contado && !confirm("¿Poner el conteo en cero sin guardarlo?")) return;
+  est.contado = 0; est.pila = []; est.inicio = null;
   guardar();
   cerrar("hojaAjustes");
-  $("pistaSeguir").hidden = true;
-  document.body.classList.remove("completo", "exceso");
-  irA("preparar");
+  pintar();
 });
 
 /* ---------- historial ---------- */
@@ -565,7 +515,7 @@ function pintarHistorial(){
     return;
   }
   est.historial.forEach(function(h){
-    var dif = h.contado - h.total;
+    var dif = h.total ? h.contado - h.total : 0;
     var li = document.createElement("li");
 
     var izq = document.createElement("div");
@@ -575,22 +525,25 @@ function pintarHistorial(){
     nom.textContent = h.nombre || "Sin nombre";
     var sub = document.createElement("div");
     sub.className = "sub num";
-    sub.textContent = h.contado + " de " + h.total + " · " + fechaCorta(h.fin);
+    sub.textContent = (h.total ? h.contado + " de " + h.total : h.contado + " contados") +
+      " · " + fechaCorta(h.fin);
     izq.appendChild(nom); izq.appendChild(sub);
 
     var marca = document.createElement("span");
     marca.className = "dif num " + (dif === 0 ? "ok" : "mal");
-    marca.textContent = dif === 0 ? "cuadra" : (dif > 0 ? "+" + dif : String(dif));
+    marca.textContent = !h.total ? "sin total" : (dif === 0 ? "cuadra" : (dif > 0 ? "+" + dif : String(dif)));
 
     var rep = document.createElement("button");
     rep.className = "icono"; rep.type = "button"; rep.textContent = "↻";
-    rep.setAttribute("aria-label", "Repetir este conteo");
+    rep.setAttribute("aria-label", "Contar otra vez lo mismo");
     rep.addEventListener("click", function(){
-      $("nombre").value = h.nombre || "";
-      $("total").value = h.total;
-      elegirPaso(h.paso || 1);
-      revisarEmpezar();
-      irA("preparar");
+      est.esperado = h.total || 0;
+      est.contado = 0; est.pila = []; est.inicio = null;
+      est.paso = h.paso || 1;
+      guardar();
+      pintarPasos();
+      pintar();
+      irA("contar");
     });
 
     li.appendChild(izq); li.appendChild(marca); li.appendChild(rep);
@@ -598,12 +551,12 @@ function pintarHistorial(){
   });
 }
 $("verHistorial").addEventListener("click", function(){ pintarHistorial(); irA("historial"); });
-$("volverDeHistorial").addEventListener("click", function(){ irA(est.actual ? "contar" : "preparar"); });
+$("volverDeHistorial").addEventListener("click", function(){ irA("contar"); });
 $("copiarTodo").addEventListener("click", function(){
   if(!est.historial.length) return;
   var txt = "Fecha\tQué\tEsperado\tContado\tDiferencia\n" + est.historial.map(function(h){
-    return fechaCorta(h.fin) + "\t" + (h.nombre || "Sin nombre") + "\t" + h.total + "\t" +
-           h.contado + "\t" + (h.contado - h.total);
+    return fechaCorta(h.fin) + "\t" + (h.nombre || "Sin nombre") + "\t" + (h.total || "") + "\t" +
+           h.contado + "\t" + (h.total ? h.contado - h.total : "");
   }).join("\n");
   var listo = function(){
     $("copiarTodo").textContent = "Copiado";
@@ -627,18 +580,11 @@ $("borrarTodo").addEventListener("click", function(){
 });
 
 /* ---------- arranque ---------- */
-pasoElegido = (est.actual && est.actual.paso) || 1;
 pintarPasos();
 pintarAjustes();
 pintarHistorial();
-pintarConteo();
-if(est.actual){
-  $("pistaSeguir").hidden = false;
-  $("pistaSeguir").textContent = "Tenías un conteo sin terminar y sigue abierto.";
-  irA("contar");
-}else{
-  irA("preparar");
-}
+pintar();
+irA("contar");
 })();
 </script>
 </body>
