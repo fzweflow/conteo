@@ -63,6 +63,25 @@ el nombre, el esperado, el conteo en curso y el historial (máximo 200).
 - **El conteo en curso se guarda en cada pulsación.** Si se cierra la app, al
   volver sigue donde iba.
 
+## Sonido
+
+Sintetizado con WebAudio, sin archivos. Dos familias que no se confunden:
+
+| Acción | Sonido |
+|---|---|
+| Botón de contar | Triangular con la octava encima, **sube por la escala** según lo que falta: DO RE MI SOL LA DO (523→1047 Hz) |
+| Se completa el esperado | Acorde DO-MI-SOL-DO ascendente |
+| Contar de más | Cuadrada grave, 196 Hz |
+| Restar | 392 Hz |
+| Deshacer | Dos notas hacia abajo (659→494) |
+| A cero | Tres notas hacia abajo (659→494→330) |
+| Guardar el conteo | DO-SOL-MI descendente, el único que cierra |
+| Cualquier otro botón | Tic fino de 1396 Hz, corto y bajo |
+
+El tic sale de un listener delegado sobre todo ; los que tienen sonido
+propio llevan  para no sonar dos veces. Todo respeta el
+interruptor de Ajustes.
+
 ## Publicación
 
 GitHub → Cloudflare Pages. Configuración: framework preset `None`, build command

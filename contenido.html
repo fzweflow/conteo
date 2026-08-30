@@ -209,9 +209,9 @@ body.exceso   #contador{background:var(--exceso)}
   <div class="pasos" id="pasosContar"></div>
 
   <div class="fila">
-    <button id="deshacer" type="button">Deshacer</button>
-    <button id="restar" type="button" class="num">&minus;1</button>
-    <button id="aCero" type="button">A cero</button>
+    <button id="deshacer" type="button" data-son="propio">Deshacer</button>
+    <button id="restar" type="button" class="num" data-son="propio">&minus;1</button>
+    <button id="aCero" type="button" data-son="propio">A cero</button>
     <button id="terminar" type="button">Terminar</button>
   </div>
 </section>
@@ -251,7 +251,7 @@ body.exceso   #contador{background:var(--exceso)}
       <div><strong class="num" id="rDif">0</strong><small>diferencia</small></div>
     </div>
     <p class="pista" id="textoResumen"></p>
-    <button class="principal" id="guardarConteo" type="button">Guardar y empezar otro</button>
+    <button class="principal" id="guardarConteo" type="button" data-son="propio">Guardar y empezar otro</button>
     <button class="secundario" id="seguirContando" type="button">Seguir contando</button>
   </div>
 </div>
@@ -299,24 +299,89 @@ function guardar(){
 }
 function $(id){ return document.getElementById(id); }
 
-/* ---------- sonido y vibración ---------- */
+/* ---------- sonido ----------
+   Dos familias, a propósito: el botón de contar suena redondo (triangular con
+   un armónico una octava arriba) y sube de tono a medida que te acercas al
+   esperado; todo lo demás es un tic fino y bajo que no se confunde con contar.
+   Las notas van en una escala pentatónica sobre DO5 para que la subida suene
+   a escala y no a sirena.                                                   */
+var DO5 = 523.25;
+var ESCALA = [0, 2, 4, 7, 9, 12];   /* semitonos: pentatónica mayor */
+function nota(semis, base){ return (base || DO5) * Math.pow(2, semis / 12); }
+
 var audio = null;
-function tono(hz, dur, vol){
+function contexto(){
+  var AC = window.AudioContext || window.webkitAudioContext;
+  if(!AC) return null;
+  if(!audio) audio = new AC();
+  if(audio.state === "suspended") audio.resume();
+  return audio;
+}
+/* una nota; retraso en segundos desde ahora, armonico añade la octava */
+function pip(hz, dur, vol, tipo, retraso, armonico){
   if(!est.ajustes.son) return;
   try{
-    var AC = window.AudioContext || window.webkitAudioContext;
-    if(!AC) return;
-    if(!audio) audio = new AC();
-    if(audio.state === "suspended") audio.resume();
-    var o = audio.createOscillator(), g = audio.createGain(), t = audio.currentTime;
-    o.type = "triangle"; o.frequency.value = hz;
+    var a = contexto();
+    if(!a) return;
+    var t = a.currentTime + (retraso || 0);
+    var g = a.createGain();
     g.gain.setValueAtTime(0.0001, t);
     g.gain.linearRampToValueAtTime(vol, t + 0.006);
     g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    o.connect(g); g.connect(audio.destination);
-    o.start(t); o.stop(t + dur + 0.02);
+    g.connect(a.destination);
+    var o = a.createOscillator();
+    o.type = tipo || "triangle";
+    o.frequency.value = hz;
+    o.connect(g);
+    o.start(t); o.stop(t + dur + 0.03);
+    if(armonico){
+      var g2 = a.createGain();
+      g2.gain.setValueAtTime(0.0001, t);
+      g2.gain.linearRampToValueAtTime(vol * 0.32, t + 0.006);
+      g2.gain.exponentialRampToValueAtTime(0.0001, t + dur * 0.8);
+      g2.connect(a.destination);
+      var o2 = a.createOscillator();
+      o2.type = "sine";
+      o2.frequency.value = hz * 2;
+      o2.connect(g2);
+      o2.start(t); o2.stop(t + dur + 0.03);
+    }
   }catch(e){}
 }
+
+/* el tono del botón grande sube por la escala según lo que falta */
+function tonoDelPaso(){
+  if(est.esperado <= 0) return nota(0);
+  var p = Math.min(est.contado / est.esperado, 1);
+  return nota(ESCALA[Math.round(p * (ESCALA.length - 1))]);
+}
+
+function sonido(que){
+  if(!est.ajustes.son) return;
+  switch(que){
+    case "contar":   pip(tonoDelPaso(), 0.075, 0.085, "triangle", 0, true); break;
+    case "completo": [0, 4, 7, 12].forEach(function(s, i){
+                       pip(nota(s), 0.20, 0.085, "triangle", i * 0.075, true); }); break;
+    case "exceso":   pip(196, 0.085, 0.055, "square"); break;
+    case "restar":   pip(nota(-5), 0.06, 0.05, "sine"); break;
+    case "deshacer": pip(nota(4), 0.05, 0.045, "sine");
+                     pip(nota(-1), 0.07, 0.045, "sine", 0.055); break;
+    case "cero":     [4, -1, -8].forEach(function(s, i){
+                       pip(nota(s), 0.07, 0.05, "sine", i * 0.055); }); break;
+    case "terminar": [12, 7, 4].forEach(function(s, i){
+                       pip(nota(s), 0.26, 0.075, "triangle", i * 0.085, true); }); break;
+    default:         pip(1396, 0.02, 0.028, "sine"); break;   /* tic de los demás botones */
+  }
+}
+/* cualquier botón que no tenga sonido propio hace el tic fino */
+document.addEventListener("click", function(ev){
+  var b = ev.target.closest ? ev.target.closest("button") : null;
+  if(!b || b.id === "contador" || b.dataset.son === "propio") return;
+  sonido("tic");
+});
+document.addEventListener("change", function(ev){
+  if(ev.target.type === "checkbox" || ev.target.type === "number") sonido("tic");
+});
 function vibrar(patron){
   if(!est.ajustes.vib) return;
   try{ if(navigator.vibrate) navigator.vibrate(patron); }catch(e){}
@@ -428,21 +493,19 @@ function pintar(){
 }
 
 /* ---------- contar ---------- */
-function aplicar(delta){
+function aplicar(delta, comoSuena){
   var antes = est.contado;
   est.contado = Math.max(0, est.contado + delta);
   if(est.contado === antes) return;
   if(!est.inicio) est.inicio = Date.now();
   est.pila.push(est.contado - antes);
   if(est.pila.length > 500) est.pila.shift();
-  var completo = est.esperado > 0 && est.contado === est.esperado && delta > 0;
-  if(completo){
-    vibrar([26,60,26]); tono(760, 0.10, 0.09);
-    setTimeout(function(){ tono(1140, 0.12, 0.09); }, 95);
-  }else if(delta > 0){
-    vibrar(11); tono(880, 0.035, 0.06);
+  if(delta > 0){
+    if(est.esperado > 0 && est.contado === est.esperado){ vibrar([26,60,26]); sonido("completo"); }
+    else if(est.esperado > 0 && est.contado > est.esperado){ vibrar([9,40,9]); sonido("exceso"); }
+    else { vibrar(11); sonido(comoSuena || "contar"); }
   }else{
-    vibrar(18); tono(420, 0.05, 0.05);
+    vibrar(18); sonido(comoSuena || "restar");
   }
   guardar();
   pintar();
@@ -450,7 +513,7 @@ function aplicar(delta){
 function deshacer(){
   if(!est.pila.length) return;
   est.contado = Math.max(0, est.contado - est.pila.pop());
-  vibrar(18); tono(360, 0.05, 0.05);
+  vibrar(18); sonido("deshacer");
   guardar();
   pintar();
 }
@@ -471,7 +534,7 @@ $("deshacer").addEventListener("click", deshacer);
    lo devuelve entero si fue sin querer. Un cuadro de confirmación aquí sobra. */
 $("aCero").addEventListener("click", function(){
   if(!est.contado) return;
-  aplicar(-est.contado);
+  aplicar(-est.contado, "cero");
 });
 
 document.addEventListener("keydown", function(ev){
@@ -541,6 +604,7 @@ $("guardarConteo").addEventListener("click", function(){
   if(est.historial.length > 200) est.historial.length = 200;
   est.contado = 0; est.pila = []; est.inicio = null;
   guardar();
+  sonido("terminar");
   cerrar("hojaResumen");
   pintarHistorial();
   pintar();
